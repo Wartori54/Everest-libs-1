@@ -231,17 +231,6 @@ jobs:
 
         make
         
-    # FNA (Only built on Linux, due to being platform agnostic)
-    - uses: actions/setup-dotnet@v4
-      if: ${{ matrix.platform == 'linux' }}
-      with:
-        dotnet-version: '8'
-
-    - name: Build FNA
-      if: ${{ matrix.platform == 'linux' }}
-      working-directory: source/FNA
-      run: dotnet build -c ${{ env.BUILD_TYPE }} FNA.Core.csproj
-
     # Upload
     - name: Copy binaries (Windows)
       if: ${{ matrix.platform == 'windows' }}
@@ -264,8 +253,6 @@ jobs:
     - name: Copy binaries (Linux)
       if: ${{ matrix.platform == 'linux' }}
       run: |
-        cp source/FNA/bin/${{ env.BUILD_TYPE }}/${{ env.NET_FRAMEWORK }}/FNA.dll FNA.dll
-        cp source/FNA/bin/${{ env.BUILD_TYPE }}/${{ env.NET_FRAMEWORK }}/FNA.pdb FNA.pdb
         cp ${{ env.SDL2_DIR }}/lib/libSDL2-2.0.so.0 libSDL2-2.0.so.0
         cp source/FNA/lib/FAudio/build/libFAudio.so.0 libFAudio.so.0
         cp source/FNA/lib/FNA3D/build/libFNA3D.so.0 libFNA3D.so.0
@@ -301,8 +288,6 @@ jobs:
       with:
         name: fnalibs-linux-x86_64
         path: |
-          FNA.dll
-          FNA.pdb
           libSDL2-2.0.so.0
           libFAudio.so.0
           libFNA3D.so.0
@@ -341,6 +326,10 @@ jobs:
     - name: Build NLua
       working-directory: source/NLua
       run: dotnet publish -c ${{ env.BUILD_TYPE }} build/net6.0/NLua.net6.0.csproj
+      
+    - name: Build FNA
+      working-directory: source/FNA
+      run: dotnet build -c ${{ env.BUILD_TYPE }} FNA.Core.csproj
     
     - name: Copy artifacts
       run: |
@@ -352,6 +341,9 @@ jobs:
         cp source/MonoMod/artifacts/publish/MonoMod.RuntimeDetour.HookGen/$MM_DIR/* all_artifacts
         
         cp -r source/NLua/lib/${{ env.BUILD_TYPE }}/net6.0/publish/* all_artifacts
+        
+        cp source/FNA/bin/${{ env.BUILD_TYPE }}/${{ env.NET_FRAMEWORK }}/FNA.dll all_artifacts
+        cp source/FNA/bin/${{ env.BUILD_TYPE }}/${{ env.NET_FRAMEWORK }}/FNA.pdb all_artifacts
         
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
@@ -489,8 +481,8 @@ jobs:
           pushd ../lib-ext
           
           ### Vanilla overrides
-          cp ../binaries/fnalibs-linux-x86_64/FNA.dll lib-vanilla
-          cp ../binaries/fnalibs-linux-x86_64/FNA.pdb lib-vanilla
+          cp ../binaries/managed-libraries/FNA.dll lib-vanilla
+          cp ../binaries/managed-libraries/FNA.pdb lib-vanilla
 
           # Windows x86
           cp ../binaries/fnalibs-windows-i686/FNA3D.dll lib-vanilla
@@ -513,8 +505,8 @@ jobs:
           cp ../binaries/fnalibs-linux-x86_64/libtheorafile.so lib-vanilla/lib64
 
           ### Everest Libraries
-          mv ../binaries/fnalibs-linux-x86_64/FNA.dll .
-          mv ../binaries/fnalibs-linux-x86_64/FNA.pdb .
+          mv ../binaries/managed-libraries/FNA.dll .
+          mv ../binaries/managed-libraries/FNA.pdb .
           
           mv ../binaries/managed-libraries/* .
 

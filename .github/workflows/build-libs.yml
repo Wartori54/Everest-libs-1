@@ -6,6 +6,7 @@ on:
       - .github/workflows/**
       - source/**
       - patches/**
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -139,23 +140,25 @@ jobs:
       if: ${{ matrix.platform == 'linux' }}
       run: echo "SDL2_LIB=${{ env.SDL2_DIR }}/lib/libSDL2-2.0.so" >> $GITHUB_ENV
 
-    # FNA3D + FAudio
-    - name: Update FNA3D + FAudio CMake version (Windows)
-      if: ${{ matrix.platform == 'windows' }}
-      run: |
-        # Update CMake to use CMAKE_MSVC_RUNTIME_LIBRARY
-        sed -i 's/cmake_minimum_required.*/cmake_minimum_required(VERSION 3.16)/' source/FNA/lib/FNA3D/CMakeLists.txt
-        sed -i 's/cmake_minimum_required.*/cmake_minimum_required(VERSION 3.16)/' source/FNA/lib/FAudio/CMakeLists.txt
-    
     # FNA3D  
-    - name: Patch FNA3D
+    - name: Patch FNA3D + MojoShader
       working-directory: source/FNA/lib/FNA3D
       run: |
         # Required for applying patches
-        git config user.name github-actions
-        git config user.email github-actions@github.com
+        git config --global user.name github-actions
+        git config --global user.email github-actions@github.com
         
         git am ../../../../patches/FNA3D_ExclusiveFullscreen.patch
+        git am ../../../../patches/FNA3D_Headless.patch
+
+        if [ "x${{ runner.os }}" = "xWindows" ]; then
+          # Update CMake to use CMAKE_MSVC_RUNTIME_LIBRARY
+          sed -i 's/cmake_minimum_required.*/cmake_minimum_required(VERSION 3.16)/' CMakeLists.txt
+        fi
+
+        cd MojoShader
+        git am ../../../../../patches/MojoShader_Headless.patch
+        cd ..
 
     - name: Configure FNA3D
       working-directory: source/FNA/lib/FNA3D
@@ -171,6 +174,14 @@ jobs:
       run: cmake --build build --config ${{ env.BUILD_TYPE }} --verbose --parallel
 
     # FAudio
+    - name: Patch FAudio
+      working-directory: source/FNA/lib/FAudio
+      run: |
+        if [ "x${{ runner.os }}" = "xWindows" ]; then
+          # Update CMake to use CMAKE_MSVC_RUNTIME_LIBRARY
+          sed -i 's/cmake_minimum_required.*/cmake_minimum_required(VERSION 3.16)/' CMakeLists.txt
+        fi
+
     - name: Configure FAudio
       working-directory: source/FNA/lib/FAudio
       run: cmake -B build -G Ninja \

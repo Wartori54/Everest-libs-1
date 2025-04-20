@@ -461,6 +461,8 @@ jobs:
           mkdir -p ../lib-ext/lib64-win-x64
           mkdir -p ../lib-ext/lib64-osx
           mkdir -p ../lib-ext/lib64-linux
+
+          mkdir -p ../lib-ext/piton
          
           ### Vendored files
           cp README_lib-ext.md ../lib-ext/README.md
@@ -521,10 +523,10 @@ jobs:
           cp ../binaries/discord_game_sdk/lib/x86_64/discord_game_sdk.so lib64-linux/libdiscord_game_sdk.so
 
           ### Piton
-          mv ../binaries/piton-apphosts-i686-pc-windows-msvc piton
-          mv ../binaries/piton-apphosts-x86_64-pc-windows-msvc piton
-          mv ../binaries/piton-apphosts-x86_64-unknown-linux-gnu piton
-          mv ../binaries/piton-apphosts-x86_64-apple-darwin piton
+          mv ../binaries/piton-apphosts-i686-pc-windows-msvc/* piton
+          mv ../binaries/piton-apphosts-x86_64-pc-windows-msvc/* piton
+          mv ../binaries/piton-apphosts-x86_64-unknown-linux-gnu/* piton
+          mv ../binaries/piton-apphosts-x86_64-apple-darwin/* piton
 
           popd
 

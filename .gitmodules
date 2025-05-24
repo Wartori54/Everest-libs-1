@@ -1,10 +1,10 @@
-[submodule "FNA"]
+[submodule "source/FNA"]
 	path = source/FNA
 	url = https://github.com/FNA-XNA/FNA
-[submodule "SDL2"]
+[submodule "source/SDL2"]
 	path = source/SDL2
 	url = https://github.com/libsdl-org/SDL/
-[submodule "Piton"]
+[submodule "source/Piton"]
 	path = source/Piton
 	url = https://github.com/Popax21/Piton
 [submodule "source/MoltenVK"]
@@ -24,4 +24,4 @@
 	url = https://github.com/MonoMod/MonoMod/
 [submodule "source/NLua"]
 	path = source/NLua
-	url = https://github.com/EverestAPI/NLua/
+	url = https://github.com/NLua/NLua/

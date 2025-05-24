@@ -345,7 +345,7 @@ jobs:
     name: Managed Libraries
     runs-on: ubuntu-latest
     defaults:
-      run: 
+      run:
         shell: sh
 
     steps:
